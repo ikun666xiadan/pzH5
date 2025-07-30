@@ -1,5 +1,7 @@
 <template>
-  <RouterView/>
+  <div>
+    login
+  </div>
 </template>
 
 <script setup>
