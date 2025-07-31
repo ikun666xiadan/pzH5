@@ -21,7 +21,12 @@
     </van-swipe-item>
   </van-swipe>
   <van-row style="justify-content: space-around">
-    <van-col span="11" v-for="item in homeData.nav2s" :key="item.id">
+    <van-col
+      span="11"
+      v-for="(item, index) in homeData.nav2s"
+      :key="item.id"
+      @click="quickEntry(index)"
+    >
       <van-image :src="item.pic_image_url" />
     </van-col>
   </van-row>
@@ -30,6 +35,7 @@
     v-for="item in homeData.hospitals"
     :key="item.id"
     style="justify-content: space-around"
+    @click="goOrder(item.id)"
   >
     <van-col span="6">
       <van-image width="100" height="90" :src="item.avatar_url" />
@@ -49,14 +55,26 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { getHomeDataAPI } from "../../api/home";
+import { useRouter } from "vue-router";
 
 const searchValue = ref("");
 const homeData = ref({});
+const router = useRouter();
 
 onMounted(async () => {
   const res = await getHomeDataAPI();
   homeData.value = res.data;
 });
+
+// 点击快捷路口跳转创建订单页面
+const quickEntry = (index) => {
+  router.push(`/createOrder?id=${homeData.value.hospitals[index].id}`);
+};
+
+// 点击医院列表跳转创建订单页面
+const goOrder = (id) => {
+  router.push(`/createOrder?id=${id}`);
+};
 </script>
 
 <style scoped>
