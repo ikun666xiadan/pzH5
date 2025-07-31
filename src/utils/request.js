@@ -29,7 +29,7 @@ http.interceptors.response.use(
     // 同一错误拦截处理
     response => {
         if (response.data.code === -1) {
-            ElMessage.warning(response.data.msg || response.data.message?.msg || response.data.message)
+            showToast(response.data.msg || response.data.message?.msg || response.data.message)
         }
         // token失效
         if (response.data.code === -2) {
