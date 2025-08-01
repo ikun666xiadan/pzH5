@@ -19,65 +19,85 @@
         <div class="service-text">服务内容</div>
       </template>
     </van-cell>
-    <van-cell-group class="cell">
-      <van-cell>
-        <template #title>就诊医院</template>
-        <template #default>
-          <div @click="showHospitalsPopup = true">
-            <span>{{ form.hospital_name || "请选择就诊医院" }}</span>
-            <van-icon name="arrow" />
-          </div>
-        </template>
-      </van-cell>
-      <van-cell>
-        <template #title>就诊时间</template>
-        <template #default>
-          <div @click="showTimePopup = true">
-            <span>{{ startTime || "请选择就诊时间" }}</span>
-            <van-icon name="arrow" />
-          </div>
-        </template>
-      </van-cell>
-      <van-cell>
-        <template #title>陪诊师</template>
-        <template #default>
-          <div @click="showNursePopup = true">
-            <span>{{ nurseName || "请选择陪护师" }}</span>
-            <van-icon name="arrow" />
-          </div>
-        </template>
-      </van-cell>
-      <van-cell>
-        <template #title>接送地址</template>
-        <template #default>
-          <van-field
-            class="text"
-            input-align="right"
-            placeholder="请填写就诊人地址"
-            v-model="form.receiveAddress"
-          />
-        </template>
-      </van-cell>
-      <van-cell>
-        <template #title>联系电话</template>
-        <template #default>
-          <van-field
-            class="text"
-            input-align="right"
-            placeholder="请输入您的联系电话"
-            v-model="form.tel"
-          />
-        </template>
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group title="服务需求" class="cell">
-      <van-field
-        style="height: 100px"
-        placeholder="请填写您要就诊的科室..."
-        v-model="form.demand"
-      />
-    </van-cell-group>
-    <van-button type="primary" block class="sumbit" size="large" @click="submit">提交</van-button>
+    <van-form @submit="submit">
+      <van-cell-group class="cell">
+        <van-cell>
+          <template #title>就诊医院</template>
+          <template #default>
+            <div @click="showHospitalsPopup = true">
+              <span>{{ form.hospital_name || "请选择就诊医院" }}</span>
+              <van-icon name="arrow" />
+            </div>
+          </template>
+        </van-cell>
+        <van-cell>
+          <template #title>就诊时间</template>
+          <template #default>
+            <div @click="showTimePopup = true">
+              <span>{{ startTime || "请选择就诊时间" }}</span>
+              <van-icon name="arrow" />
+            </div>
+          </template>
+        </van-cell>
+        <van-cell>
+          <template #title>陪诊师</template>
+          <template #default>
+            <div @click="showNursePopup = true">
+              <span>{{ nurseName || "请选择陪护师" }}</span>
+              <van-icon name="arrow" />
+            </div>
+          </template>
+        </van-cell>
+        <van-cell>
+          <template #title>接送地址</template>
+          <template #default>
+            <van-field
+              class="text"
+              input-align="right"
+              placeholder="请填写就诊人地址"
+              v-model="form.receiveAddress"
+              :rules="[{ required: true, message: '请填写就诊人地址' }]"
+            />
+          </template>
+        </van-cell>
+        <van-cell>
+          <template #title>联系电话</template>
+          <template #default>
+            <van-field
+              class="text"
+              input-align="right"
+              placeholder="请输入您的联系电话"
+              :rules="[
+                { required: true, message: '请填写手机号' },
+                {
+                  pattern: /^1[3-9]\d{9}$/,
+                  message: '请输入正确的手机号',
+                  trigger: 'onBlur',
+                },
+              ]"
+              v-model="form.tel"
+            />
+          </template>
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group title="服务需求" class="cell">
+        <van-field
+          style="height: 100px"
+          placeholder="请填写您要就诊的科室..."
+          v-model="form.demand"
+          :rules="[{ required: true, message: '请简单填写您要就诊的科室' }]"
+        />
+      </van-cell-group>
+      <van-button
+        type="primary"
+        block
+        class="sumbit"
+        size="large"
+        native-type="submit"
+        >提交</van-button
+      >
+    </van-form>
+
     <!-- 就诊医院 -->
     <van-popup
       v-model:show="showHospitalsPopup"
@@ -115,6 +135,14 @@
         @confirm="onNurseConfirm"
       />
     </van-popup>
+
+    <!-- 微信支付二维码 -->
+    <van-dialog v-model:show="showQRcode" :show-confirm-button="false">
+      <van-icon name="cross" class="close" @click="close"/>
+      <div>微信支付</div>
+      <van-image width="150" height="150" :src="QRcodeImg" />
+      <div>请使用本人微信扫码二维码进行支付</div>
+    </van-dialog>
   </div>
 </template>
 
@@ -122,7 +150,8 @@
 import { useRouter } from "vue-router";
 import statusBar from "../../components/statusBar.vue";
 import { computed, onMounted, reactive, ref } from "vue";
-import { getOrderDataAPI } from "../../api/createOrder";
+import { createOrderAPI, getOrderDataAPI } from "../../api/createOrder";
+import QRcode from 'qrcode'
 
 const showHospitalsPopup = ref(false);
 const showTimePopup = ref(false);
@@ -145,6 +174,8 @@ const form = reactive({
   starttime: 0,
 });
 const nurseName = ref("");
+const showQRcode = ref(false)
+const QRcodeImg = ref('')
 
 onMounted(async () => {
   const { data } = await getOrderDataAPI();
@@ -152,9 +183,18 @@ onMounted(async () => {
 });
 
 // 提交按钮
-const submit = ()=>{
-  console.log(form);
-  
+const submit = async () => {
+  const res = await createOrderAPI(form);
+  QRcode.toDataURL(res.data.wx_code).then((url)=>{
+    showQRcode.value = true
+    QRcodeImg.value = url
+  })
+};
+
+// 关闭支付二维码
+const close = ()=>{
+  showQRcode.value = false
+  router.push('/order')
 }
 
 // 处理就诊医院

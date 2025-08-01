@@ -5,4 +5,8 @@ const getOrderDataAPI = ()=>{
     return request.get('/h5/companion')
 }
 
-export { getOrderDataAPI }
+const createOrderAPI = (data)=>{
+    return request.post('/createOrder',data)
+}
+
+export { getOrderDataAPI, createOrderAPI }
