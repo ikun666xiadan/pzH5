@@ -19,26 +19,178 @@
         <div class="service-text">服务内容</div>
       </template>
     </van-cell>
+    <van-cell-group class="cell">
+      <van-cell>
+        <template #title>就诊医院</template>
+        <template #default>
+          <div @click="showHospitalsPopup = true">
+            <span>{{ form.hospital_name || "请选择就诊医院" }}</span>
+            <van-icon name="arrow" />
+          </div>
+        </template>
+      </van-cell>
+      <van-cell>
+        <template #title>就诊时间</template>
+        <template #default>
+          <div @click="showTimePopup = true">
+            <span>{{ startTime || "请选择就诊时间" }}</span>
+            <van-icon name="arrow" />
+          </div>
+        </template>
+      </van-cell>
+      <van-cell>
+        <template #title>陪诊师</template>
+        <template #default>
+          <div @click="showNursePopup = true">
+            <span>{{ nurseName || "请选择陪护师" }}</span>
+            <van-icon name="arrow" />
+          </div>
+        </template>
+      </van-cell>
+      <van-cell>
+        <template #title>接送地址</template>
+        <template #default>
+          <van-field
+            class="text"
+            input-align="right"
+            placeholder="请填写就诊人地址"
+            v-model="form.receiveAddress"
+          />
+        </template>
+      </van-cell>
+      <van-cell>
+        <template #title>联系电话</template>
+        <template #default>
+          <van-field
+            class="text"
+            input-align="right"
+            placeholder="请输入您的联系电话"
+            v-model="form.tel"
+          />
+        </template>
+      </van-cell>
+    </van-cell-group>
+    <van-cell-group title="服务需求" class="cell">
+      <van-field
+        style="height: 100px"
+        placeholder="请填写您要就诊的科室..."
+        v-model="form.demand"
+      />
+    </van-cell-group>
+    <van-button type="primary" block class="sumbit" size="large" @click="submit">提交</van-button>
+    <!-- 就诊医院 -->
+    <van-popup
+      v-model:show="showHospitalsPopup"
+      position="bottom"
+      :style="{ height: '30%' }"
+    >
+      <van-picker
+        :columns="hospitalsData"
+        @cancel="showHospitalsPopup = false"
+        @confirm="onHospitalsConfirm"
+      />
+    </van-popup>
+    <!-- 就诊时间 -->
+    <van-popup
+      v-model:show="showTimePopup"
+      position="bottom"
+      :style="{ height: '30%' }"
+    >
+      <van-date-picker
+        title="选择日期"
+        :min-date="minDate"
+        @cancel="showTimePopup = false"
+        @confirm="onTimeConfirm"
+      />
+    </van-popup>
+    <!-- 陪诊师 -->
+    <van-popup
+      v-model:show="showNursePopup"
+      position="bottom"
+      :style="{ height: '30%' }"
+    >
+      <van-picker
+        :columns="nurseData"
+        @cancel="showNursePopup = false"
+        @confirm="onNurseConfirm"
+      />
+    </van-popup>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from "vue-router";
 import statusBar from "../../components/statusBar.vue";
-import { onMounted, reactive } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { getOrderDataAPI } from "../../api/createOrder";
 
+const showHospitalsPopup = ref(false);
+const showTimePopup = ref(false);
+const showNursePopup = ref(false);
+const minDate = ref(new Date());
+const startTime = ref("");
 const router = useRouter();
 const orderData = reactive({
   companion: [],
   hospitals: [],
   service: {},
 });
+const form = reactive({
+  hospital_id: "",
+  hospital_name: "",
+  demand: "",
+  companion_id: "",
+  receiveAddress: "",
+  tel: "",
+  starttime: 0,
+});
+const nurseName = ref("");
 
 onMounted(async () => {
   const { data } = await getOrderDataAPI();
   Object.assign(orderData, data);
 });
+
+// 提交按钮
+const submit = ()=>{
+  console.log(form);
+  
+}
+
+// 处理就诊医院
+const hospitalsData = computed(() => {
+  return orderData.hospitals.map((item) => {
+    return { text: item.name, value: item.id };
+  });
+});
+
+// 选择就诊医院
+const onHospitalsConfirm = (value) => {
+  form.hospital_id = value.selectedOptions[0].value;
+  form.hospital_name = value.selectedOptions[0].text;
+  showHospitalsPopup.value = false;
+};
+
+// 选择就诊时间
+const onTimeConfirm = (value) => {
+  startTime.value = value.selectedValues.join("-");
+  form.starttime = new Date(startTime.value).getTime();
+  showTimePopup.value = false;
+};
+
+// 处理陪护师
+const nurseData = computed(() => {
+  return orderData.companion.map((item) => {
+    return { text: item.name, value: item.id };
+  });
+});
+
+// 选择陪护师
+const onNurseConfirm = (value) => {
+  form.companion_id = value.selectedOptions[0].value;
+  nurseName.value = value.selectedOptions[0].text;
+  showNursePopup.value = false;
+};
 
 const goBack = () => {
   router.go(-1);
