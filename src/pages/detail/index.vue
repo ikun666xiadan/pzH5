@@ -2,7 +2,7 @@
   <div class="container">
     <NavBar title="订单详情"/>
     <StatusBar :item="stateMap[orderDetail.trade_state]"/>
-    <Tips :state="orderDetail.trade_state"/>
+    <Tips :orderInfo="orderDetail"/>
     <van-cell-group class="card">
       <div class="header-text">预约信息</div>
         <van-cell title="预约服务" :value="orderDetail.service_name" />
@@ -47,7 +47,6 @@ const stateMap = {
 onMounted(async()=>{
   const res = await getOrderInfoAPI({oid:route.query.oid})
   Object.assign(orderDetail,res.data)
-  console.log(orderDetail);
 })
 </script>
 
