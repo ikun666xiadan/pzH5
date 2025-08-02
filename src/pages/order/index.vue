@@ -8,7 +8,12 @@
       <van-tab title="已完成" name="3" />
       <van-tab title="已取消" name="4" />
     </van-tabs>
-    <van-row class="van-row" v-for="item in orderList" :key="item.out_trade_no" @click="goDetail(item.out_trade_no)">
+    <van-row
+      class="van-row"
+      v-for="item in orderList"
+      :key="item.out_trade_no"
+      @click="goDetail(item.out_trade_no)"
+    >
       <van-col span="5">
         <van-image width="50" height="50" radius="5" :src="item.serviceImg" />
       </van-col>
@@ -17,7 +22,11 @@
         <div class="text2">{{ item.hospital_name }}</div>
         <div class="text2">预约时间：{{ item.starttime }}</div>
       </van-col>
-      <van-col class="text2" span="5" :style="{ color: colorMap[item.trade_state] }">
+      <van-col
+        class="text2"
+        span="5"
+        :style="{ color: colorMap[item.trade_state] }"
+      >
         {{ item.trade_state }}
         <Counter :second="item.timer" v-if="item.trade_state === '待支付'" />
       </van-col>
@@ -28,13 +37,13 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { getOrderListAPI } from "../../api/createOrder";
+import { getOrderListAPI } from "../../api/order";
 import Counter from "../../components/counter.vue";
 import { useRouter } from "vue-router";
 
 const orderList = ref([]);
 const active = ref(1);
-const router = useRouter()
+const router = useRouter();
 const colorMap = {
   待支付: "#ffa200",
   待服务: "#1da6fd",
@@ -60,9 +69,9 @@ const onClickTab = (value) => {
 };
 
 // 跳转详情
-const goDetail = (id)=>{
-  router.push(`detail?id=${id}`)
-}
+const goDetail = (id) => {
+  router.push(`detail?id=${id}`);
+};
 </script>
 
 <style scoped>

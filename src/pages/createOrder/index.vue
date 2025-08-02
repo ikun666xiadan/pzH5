@@ -138,7 +138,7 @@
 
     <!-- 微信支付二维码 -->
     <van-dialog v-model:show="showQRcode" :show-confirm-button="false">
-      <van-icon name="cross" class="close" @click="close"/>
+      <van-icon name="cross" class="close" @click="close" />
       <div>微信支付</div>
       <van-image width="150" height="150" :src="QRcodeImg" />
       <div>请使用本人微信扫码二维码进行支付</div>
@@ -150,8 +150,8 @@
 import { useRouter } from "vue-router";
 import statusBar from "../../components/statusBar.vue";
 import { computed, onMounted, reactive, ref } from "vue";
-import { createOrderAPI, getOrderDataAPI } from "../../api/createOrder";
-import QRcode from 'qrcode'
+import { createOrderAPI, getOrderDataAPI } from "../../api/order";
+import QRcode from "qrcode";
 
 const showHospitalsPopup = ref(false);
 const showTimePopup = ref(false);
@@ -174,8 +174,8 @@ const form = reactive({
   starttime: 0,
 });
 const nurseName = ref("");
-const showQRcode = ref(false)
-const QRcodeImg = ref('')
+const showQRcode = ref(false);
+const QRcodeImg = ref("");
 
 onMounted(async () => {
   const { data } = await getOrderDataAPI();
@@ -185,17 +185,17 @@ onMounted(async () => {
 // 提交按钮
 const submit = async () => {
   const res = await createOrderAPI(form);
-  QRcode.toDataURL(res.data.wx_code).then((url)=>{
-    showQRcode.value = true
-    QRcodeImg.value = url
-  })
+  QRcode.toDataURL(res.data.wx_code).then((url) => {
+    showQRcode.value = true;
+    QRcodeImg.value = url;
+  });
 };
 
 // 关闭支付二维码
-const close = ()=>{
-  showQRcode.value = false
-  router.push('/order')
-}
+const close = () => {
+  showQRcode.value = false;
+  router.push("/order");
+};
 
 // 处理就诊医院
 const hospitalsData = computed(() => {
