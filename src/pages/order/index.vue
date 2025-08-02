@@ -70,7 +70,7 @@ const onClickTab = (value) => {
 
 // 跳转详情
 const goDetail = (oid) => {
-  router.push(`detail?id=${oid}`);
+  router.push(`detail?oid=${oid}`);
 };
 </script>
 
