@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <NavBar title="填写订单"/>
-    <status-bar item="0" />
+    <status-bar :item="stateMap" />
     <van-cell class="cell">
       <template #title style="justify-content: center">
         <van-image width="25" height="25" :src="orderData.service.serviceImg" />
@@ -169,6 +169,7 @@ const form = reactive({
 const nurseName = ref("");
 const showQRcode = ref(false);
 const QRcodeImg = ref("");
+const stateMap = ref(0)
 
 onMounted(async () => {
   const { data } = await getOrderDataAPI();
@@ -182,6 +183,7 @@ const submit = async () => {
     showQRcode.value = true;
     QRcodeImg.value = url;
   });
+  stateMap.value = 10
 };
 
 // 关闭支付二维码

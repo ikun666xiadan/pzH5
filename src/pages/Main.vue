@@ -1,6 +1,8 @@
 <template>
   <div>
-    <RouterView/>
+    <div class="page-content">
+      <RouterView/>
+    </div>
     <van-tabbar v-model="active">
       <van-tabbar-item v-for="item in tabBarData.children" :key="item.path" :icon="item.meta.icon" :url="`/#${item.path}`">{{item.meta.name}}</van-tabbar-item>
     </van-tabbar>
@@ -24,5 +26,7 @@ onMounted(()=>{
 </script>
 
 <style scoped>
-
+.page-content {
+  padding-bottom: 40px;
+}
 </style>
