@@ -15,4 +15,9 @@ const getOrderListAPI = (params) => {
   return request.get("/order/list", { params });
 };
 
-export { getOrderDataAPI, createOrderAPI, getOrderListAPI };
+// 获取订单详情
+const getOrderInfoAPI = (params) => {
+  return request.get("/order/detail", { params });
+};
+
+export { getOrderDataAPI, createOrderAPI, getOrderListAPI, getOrderInfoAPI };

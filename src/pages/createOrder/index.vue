@@ -1,14 +1,6 @@
 <template>
   <div class="container">
-    <div class="header">
-      <van-icon
-        name="arrow-left"
-        class="header-left"
-        size="30"
-        @click="goBack"
-      />
-      填写订单
-    </div>
+    <NavBar title="填写订单"/>
     <status-bar item="0" />
     <van-cell class="cell">
       <template #title style="justify-content: center">
@@ -149,6 +141,7 @@
 <script setup>
 import { useRouter } from "vue-router";
 import statusBar from "../../components/statusBar.vue";
+import NavBar from "../../components/navBar.vue"
 import { computed, onMounted, reactive, ref } from "vue";
 import { createOrderAPI, getOrderDataAPI } from "../../api/order";
 import QRcode from "qrcode";
@@ -232,25 +225,12 @@ const onNurseConfirm = (value) => {
   showNursePopup.value = false;
 };
 
-const goBack = () => {
-  router.go(-1);
-};
 </script>
 
 <style scoped>
 .container {
   background-color: #f0f0f0;
   height: 100vh;
-}
-.header {
-  padding: 10px 0;
-  text-align: center;
-  line-height: 30px;
-  font-size: 20px;
-  background: #fff;
-  .header-left {
-    float: left;
-  }
 }
 
 .cell {

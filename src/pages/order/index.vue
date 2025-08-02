@@ -69,8 +69,8 @@ const onClickTab = (value) => {
 };
 
 // 跳转详情
-const goDetail = (id) => {
-  router.push(`detail?id=${id}`);
+const goDetail = (oid) => {
+  router.push(`detail?id=${oid}`);
 };
 </script>
 
