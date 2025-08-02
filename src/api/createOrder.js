@@ -5,8 +5,14 @@ const getOrderDataAPI = ()=>{
     return request.get('/h5/companion')
 }
 
+// 创建订单
 const createOrderAPI = (data)=>{
     return request.post('/createOrder',data)
 }
 
-export { getOrderDataAPI, createOrderAPI }
+// 获取订单列表
+const getOrderListAPI = (params)=>{
+     return request.get('/order/list',{ params })
+}
+
+export { getOrderDataAPI, createOrderAPI, getOrderListAPI }
