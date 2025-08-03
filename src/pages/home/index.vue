@@ -50,7 +50,7 @@
       <div class="yy-text">{{ item.intro }}</div>
     </van-col>
   </van-row>
-  
+  <div style="height: 50px;"></div>
 </template>
 
 <script setup>
