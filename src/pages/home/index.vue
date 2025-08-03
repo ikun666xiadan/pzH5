@@ -50,6 +50,7 @@
       <div class="yy-text">{{ item.intro }}</div>
     </van-col>
   </van-row>
+  
 </template>
 
 <script setup>

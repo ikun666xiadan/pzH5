@@ -39,11 +39,12 @@
 import { onMounted, ref } from "vue";
 import { getOrderListAPI } from "../../api/order";
 import Counter from "../../components/counter.vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const orderList = ref([]);
-const active = ref(1);
+const active = ref(0); // 对应标签索引：0=全部，1=待支付，2=待服务，3=已完成，4=已取消
 const router = useRouter();
+const route = useRoute();
 const colorMap = {
   待支付: "#ffa200",
   待服务: "#1da6fd",
@@ -51,7 +52,14 @@ const colorMap = {
 };
 
 onMounted(() => {
-  getOrderList("");
+  // 从URL参数中获取active值
+  const urlActive = route.query.active;
+  if (urlActive) {
+    active.value = urlActive;
+  }
+  // 根据active值获取对应的订单状态
+  const state = active.value === 0 ? "" : active.value.toString();
+  getOrderList(state);
 });
 
 // 获取订单列表
@@ -65,7 +73,10 @@ const getOrderList = async (state) => {
 
 // 点击标签栏切换不同内容
 const onClickTab = (value) => {
-  getOrderList(value.name);
+  active.value = value.name;
+  // 获取对应的订单状态
+  const state = value.name || "";
+  getOrderList(state);
 };
 
 // 跳转详情
