@@ -33,6 +33,7 @@
     </van-row>
     <div class="bottom-text">没有更多了</div>
   </div>
+  <div style="height: 50px;"></div>
 </template>
 
 <script setup>
