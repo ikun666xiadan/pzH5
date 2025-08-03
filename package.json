@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^13.6.0",
     "axios": "^1.11.0",
     "dayjs": "^1.11.13",
     "less": "^4.4.0",
