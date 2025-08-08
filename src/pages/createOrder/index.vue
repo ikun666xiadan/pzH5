@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <NavBar title="填写订单"/>
+    <NavBar title="填写订单" />
     <status-bar :item="stateMap" />
     <van-cell class="cell">
       <template #title style="justify-content: center">
@@ -43,13 +43,10 @@
         <van-cell>
           <template #title>接送地址</template>
           <template #default>
-            <van-field
-              class="text"
-              input-align="right"
-              placeholder="请填写就诊人地址"
-              v-model="form.receiveAddress"
-              :rules="[{ required: true, message: '请填写就诊人地址' }]"
-            />
+            <div @click="showAreaPopup = true">
+              <span>{{ form.receiveAddress || "请选择接送地址" }}</span>
+              <van-icon name="arrow" />
+            </div>
           </template>
         </van-cell>
         <van-cell>
@@ -135,20 +132,36 @@
       <van-image width="150" height="150" :src="QRcodeImg" />
       <div>请使用本人微信扫码二维码进行支付</div>
     </van-dialog>
+
+    <!-- 选择地区 -->
+    <van-popup
+      v-model:show="showAreaPopup"
+      position="bottom"
+      :style="{ height: '30%' }"
+    >
+      <van-area
+        title="请选择地区"
+        :area-list="areaList"
+        @confirm="confirmArea"
+        @cancel="showAreaPopup = false"
+      />
+    </van-popup>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from "vue-router";
 import statusBar from "../../components/statusBar.vue";
-import NavBar from "../../components/navBar.vue"
+import NavBar from "../../components/navBar.vue";
 import { computed, onMounted, reactive, ref } from "vue";
 import { createOrderAPI, getOrderDataAPI } from "../../api/order";
 import QRcode from "qrcode";
+import { areaList } from "@vant/area-data";
 
 const showHospitalsPopup = ref(false);
 const showTimePopup = ref(false);
 const showNursePopup = ref(false);
+const showAreaPopup = ref(false);
 const minDate = ref(new Date());
 const startTime = ref("");
 const router = useRouter();
@@ -169,12 +182,23 @@ const form = reactive({
 const nurseName = ref("");
 const showQRcode = ref(false);
 const QRcodeImg = ref("");
-const stateMap = ref(0)
+const stateMap = ref(0);
 
 onMounted(async () => {
   const { data } = await getOrderDataAPI();
   Object.assign(orderData, data);
 });
+
+// 确认接送地址
+const confirmArea = (value) => {
+  const selectedArea = value.selectedOptions.map((item) => item.text);
+  // 如果省和市相同，则去掉重复的市名
+  if (selectedArea[0] === selectedArea[1]) {
+    selectedArea.splice(1, 1); // 删除第二个重复的省名（即市名）
+  }
+  form.receiveAddress = selectedArea.join("");
+  showAreaPopup.value = false;
+};
 
 // 提交按钮
 const submit = async () => {
@@ -183,7 +207,7 @@ const submit = async () => {
     showQRcode.value = true;
     QRcodeImg.value = url;
   });
-  stateMap.value = 10
+  stateMap.value = 10;
 };
 
 // 关闭支付二维码
@@ -226,7 +250,6 @@ const onNurseConfirm = (value) => {
   nurseName.value = value.selectedOptions[0].text;
   showNursePopup.value = false;
 };
-
 </script>
 
 <style scoped>

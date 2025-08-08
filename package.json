@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vant/area-data": "^2.0.0",
     "@vueuse/core": "^13.6.0",
     "axios": "^1.11.0",
     "dayjs": "^1.11.13",
